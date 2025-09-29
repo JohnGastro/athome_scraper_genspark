@@ -65,6 +65,25 @@ athome_scraper/
 
 ### 1. セットアップ（初回のみ）
 
+#### Windows の場合
+
+```batch
+# 1. プロジェクトをダウンロード・解凍
+# 2. コマンドプロンプトまたはPowerShellを開く
+# 3. プロジェクトフォルダに移動
+cd athome_scraper
+
+# 4. セットアップスクリプトを実行
+scripts\setup_windows.bat
+
+# または手動セットアップ
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+#### macOS/Linux の場合
+
 ```bash
 # 1. プロジェクトをダウンロード・解凍
 cd athome_scraper
@@ -78,6 +97,24 @@ source venv/bin/activate
 ```
 
 ### 2. 実行
+
+#### Windows の場合
+
+```batch
+# スクレイピング実行
+scripts\run_scraper_windows.bat
+
+# ステータス確認
+scripts\run_scraper_windows.bat status
+
+# デモ実行
+scripts\run_scraper_windows.bat demo
+
+# または直接Pythonで実行
+python scripts\run_scraper.py
+```
+
+#### macOS/Linux の場合
 
 ```bash
 # スクレイピング実行

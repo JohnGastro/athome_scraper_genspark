@@ -14,8 +14,8 @@ from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from database import PropertyDatabase
-from ranking import PropertyRanker
+from .database import PropertyDatabase
+from .ranking import PropertyRanker
 
 logger = logging.getLogger(__name__)
 
