@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from config.athome_scraper_config import *
-from src.athome_scraper import AthomeScraper
+from src.selenium_scraper import SeleniumAthomeScraper
 from src.database import PropertyDatabase
 
 
@@ -65,8 +65,8 @@ def run_scraping():
             'INVESTMENT_CRITERIA': INVESTMENT_CRITERIA,
         }
         
-        # スクレイパーを実行
-        scraper = AthomeScraper(config)
+        # Seleniumスクレイパーを実行
+        scraper = SeleniumAthomeScraper(config)
         stats = scraper.scrape_all()
         
         # 結果サマリーを表示

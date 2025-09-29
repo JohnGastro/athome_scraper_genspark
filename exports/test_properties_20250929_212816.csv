@@ -1,0 +1,4 @@
+﻿property_id,title,price,address,land_area,land_area_tsubo,nearest_station,walk_time,ranking_grade,ranking_score,price_evaluation,location_evaluation,area_evaluation,investment_evaluation,url,scraped_at
+test_001,大分市中央町 売土地 100坪,"1,000万円",大分県大分市中央町1-2-3,330.58㎡（100坪）,100.0,大分駅 徒歩5分,,S,99.33,100.0,100.0,100.0,96.67,https://example.com/property/001,2025-09-29 12:28:16
+test_002,大分市萩原 売土地 50坪,800万円,大分県大分市萩原4-5-6,165.29㎡（50坪）,50.0,大分駅 徒歩15分,,C,66.0,60.0,80.0,60.0,60.0,https://example.com/property/002,2025-09-29 12:28:16
+test_003,大分市明野北 売土地 30坪,600万円,大分県大分市明野北1-2-3,99.17㎡（30坪）,30.0,大分駅 バス20分,,D,45.17,60.0,35.0,40.0,43.33,https://example.com/property/003,2025-09-29 12:28:16

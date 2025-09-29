@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Athome 大分市売土地のURL（条件指定可能）
 ATHOME_BASE_URL = "https://www.athome.co.jp"
-ATHOME_SEARCH_URL = "https://www.athome.co.jp/tochi/chuko/oita/oita-city/list/"
+ATHOME_SEARCH_URL = "https://www.athome.co.jp/kodate/chuko/oita/list/"
 
 # スクレイピング設定
 SCRAPING_CONFIG = {
