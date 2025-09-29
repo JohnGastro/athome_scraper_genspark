@@ -1,0 +1,27 @@
+# Core dependencies
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Database
+# SQLite3 is included in Python standard library
+
+# Data processing
+pandas>=2.0.0
+openpyxl>=3.1.0  # For Excel export
+
+# Utilities
+python-dotenv>=1.0.0
+python-dateutil>=2.8.0
+
+# Testing
+pytest>=7.4.0
+pytest-mock>=3.11.0
+
+# Optional: For advanced scraping (if JavaScript rendering needed)
+# selenium>=4.15.0
+# webdriver-manager>=4.0.0
+
+# Optional: For scheduling
+# schedule>=1.2.0
+# APScheduler>=3.10.0

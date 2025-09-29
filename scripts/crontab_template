@@ -1,0 +1,26 @@
+# Athome Property Scraper 定期実行設定
+# 
+# このファイルをcrontabに登録するには:
+#   crontab scripts/crontab_template
+#
+# 現在の設定を確認:
+#   crontab -l
+#
+# 設定を削除:
+#   crontab -r
+
+# 環境変数の設定（必要に応じてパスを調整）
+PATH=/usr/local/bin:/usr/bin:/bin
+SHELL=/bin/bash
+
+# プロジェクトディレクトリ（フルパスに変更してください）
+PROJECT_DIR=/path/to/athome_scraper
+
+# 毎日9時、12時、15時、17時に実行
+0 9,12,15,17 * * * cd $PROJECT_DIR && source venv/bin/activate && python scripts/run_scraper.py >> logs/cron.log 2>&1
+
+# 毎日23時にステータスレポートを生成
+0 23 * * * cd $PROJECT_DIR && source venv/bin/activate && python scripts/run_scraper.py status >> logs/status_report.log 2>&1
+
+# 毎週日曜日の0時にログファイルをローテーション（30日以上前のログを削除）
+0 0 * * 0 find $PROJECT_DIR/logs -name "*.log" -mtime +30 -delete
