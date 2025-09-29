@@ -39,21 +39,30 @@ class SeleniumAthomeScraper:
         self.search_url = config.get('ATHOME_SEARCH_URL')
         self.scraping_config = config.get('SCRAPING_CONFIG', {})
         
-        # Chrome オプション設定
+        # Chrome オプション設定（ボット検出を回避）
         self.chrome_options = Options()
+        
+        # 自動化検出を回避する設定
         self.chrome_options.add_argument('--disable-blink-features=AutomationControlled')
         self.chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.chrome_options.add_experimental_option('useAutomationExtension', False)
+        
+        # プロファイル設定（実際のユーザーのように見せる）
         self.chrome_options.add_argument("--disable-gpu")
         self.chrome_options.add_argument("--no-sandbox")
         self.chrome_options.add_argument("--disable-dev-shm-usage")
+        self.chrome_options.add_argument("--disable-web-security")
+        self.chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        self.chrome_options.add_argument("--window-size=1920,1080")
+        self.chrome_options.add_argument("--start-maximized")
         
-        # ヘッドレスモードはCAPTCHA対策のため使用しない
-        # self.chrome_options.add_argument("--headless")
+        # 言語設定
+        self.chrome_options.add_experimental_option('prefs', {
+            'intl.accept_languages': 'ja,en-US;q=0.9,en;q=0.8'
+        })
         
-        # User-Agent設定
-        user_agent = self.scraping_config.get('user_agent', 
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+        # User-Agent設定（最新のChromeバージョン）
+        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
         self.chrome_options.add_argument(f'user-agent={user_agent}')
         
         # データベースとランカーの初期化
@@ -80,15 +89,36 @@ class SeleniumAthomeScraper:
             self.driver = webdriver.Chrome(service=service, options=self.chrome_options)
             self.driver.implicitly_wait(10)
             
-            # JavaScriptでwebdriverプロパティを削除
-            self.driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-                'source': '''
-                    Object.defineProperty(navigator, 'webdriver', {
-                        get: () => undefined
+            # JavaScriptでボット検出を回避
+            stealth_js = """
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+                
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [1, 2, 3, 4, 5]
+                });
+                
+                Object.defineProperty(navigator, 'languages', {
+                    get: () => ['ja', 'en-US', 'en']
+                });
+                
+                window.navigator.chrome = {
+                    runtime: {}
+                };
+                
+                Object.defineProperty(navigator, 'permissions', {
+                    get: () => ({
+                        query: () => Promise.resolve({ state: 'granted' })
                     })
-                '''
+                });
+            """
+            
+            self.driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+                'source': stealth_js
             })
-            logger.info("WebDriverを初期化しました")
+            
+            logger.info("WebDriverを初期化しました（ステルスモード）")
         except Exception as e:
             logger.error(f"WebDriver初期化エラー: {e}")
             raise
@@ -212,16 +242,33 @@ class SeleniumAthomeScraper:
                 
                 logger.info(f"ページ{page}を取得中: {url}")
                 
-                # ページを取得
-                self.driver.get(url)
+                # ページを取得（ゆっくりとアクセス）
+                if page == 1:
+                    # 最初はホームページにアクセスしてクッキーを取得
+                    self.driver.get(self.base_url)
+                    time.sleep(3)  # 人間らしい待機時間
                 
-                # CAPTCHAが表示された場合、手動で解決するまで待機
-                if "認証にご協力ください" in self.driver.page_source:
+                self.driver.get(url)
+                time.sleep(2)  # ページ読み込み待機
+                
+                # スクロールして人間らしい動作をシミュレート
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight * 0.3);")
+                time.sleep(1)
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight * 0.6);")
+                time.sleep(1)
+                
+                # CAPTCHAチェック
+                page_source = self.driver.page_source
+                if "認証にご協力ください" in page_source or "captcha" in page_source.lower():
                     logger.warning("CAPTCHA検出。手動で解決してください...")
-                    input("CAPTCHAを解決したらEnterキーを押してください...")
+                    logger.info("パズル認証を完了させてから、Enterキーを押してください")
+                    input("解決したらEnter: ")
+                    # 解決後、ページを再読み込み
+                    self.driver.refresh()
+                    time.sleep(3)
                 
                 # ページが完全に読み込まれるまで待機
-                wait = WebDriverWait(self.driver, 20)
+                wait = WebDriverWait(self.driver, 30)
                 
                 # 物件リンクを取得
                 property_elements = self.driver.find_elements(By.CSS_SELECTOR, 
